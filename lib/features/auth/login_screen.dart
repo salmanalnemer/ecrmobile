@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const SizedBox(height: 30),
                         const Text(
-                          'نظام الدخول الموحد © 2026',
+                          'نظام ECR الإصدار 1.0.0  © 2026',
                           style:
                               TextStyle(color: Colors.grey, fontSize: 12),
                         ),
