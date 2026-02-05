@@ -1,0 +1,39 @@
+name: ecr_mobile
+description: "ECR Mobile Application"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # أيقونات iOS
+  cupertino_icons: ^1.0.8
+
+  # ===== الخرائط (تم حذف Google Maps) =====
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
+  geolocator: ^10.1.0
+
+  # الخطوط
+  google_fonts: ^6.1.0
+
+  # الاتصال بـ Django API
+  http: ^1.2.0
+
+  # التخزين الآمن والمحلي
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.5.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
