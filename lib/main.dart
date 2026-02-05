@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'features/auth/login_screen.dart'; // تأكد من المسار الصحيح
 
-void main() {
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // تهيئة Firebase (ضرورية للإشعارات)
+  await Firebase.initializeApp();
+
+  // الاشتراك في إشعارات جميع المستخدمين
+  await FirebaseMessaging.instance.subscribeToTopic('all_users');
+
   runApp(const MyApp());
 }
 
@@ -13,11 +24,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ECR Mobile',
-      // هنا السر: تعريف المسارات
+
+      // تعريف المسارات
       routes: {
-        '/login': (context) => const LoginScreen(), 
+        '/login': (context) => const LoginScreen(),
       },
-      home: const LoginScreen(), // أو الصفحة الابتدائية لتطبيقك
+
+      home: const LoginScreen(),
     );
   }
 }

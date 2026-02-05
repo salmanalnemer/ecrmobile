@@ -13,6 +13,7 @@ class ApiService {
   // ======================
   static const String authBaseUrl = '$_baseUrl/api/auth';
   static const String caseBaseUrl = '$_baseUrl/api/cases';
+  static const String notificationsBaseUrl = '$_baseUrl/api/notifications';
 
   // ======================
   // Helpers
@@ -74,6 +75,14 @@ class ApiService {
     if (response.statusCode == 200 && decoded['success'] == true) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('access_token', decoded['data']['access']);
+
+      // ✅ التعديل فقط هنا: حفظ اسم المستخدم
+      final fullName =
+          decoded['data']?['full_name'] ??
+          decoded['data']?['user']?['full_name'];
+      if (fullName != null) {
+        await prefs.setString('full_name', fullName);
+      }
 
       print("TOKEN SAVED => ${decoded['data']['access']}");
       return decoded;
@@ -232,7 +241,6 @@ class ApiService {
       body: jsonEncode({
         "full_name": fullName,
         "email": email,
-        // 👇 التعديل المهم
         "phone_number": phone,
       }),
     );
@@ -269,11 +277,48 @@ class ApiService {
   }
 
   // ======================
+  // الإشعارات
+  // ======================
+
+  static Future<List<dynamic>> fetchNotifications() async {
+    final token = await _getToken();
+
+    final response = await http.get(
+      Uri.parse('$notificationsBaseUrl/list/'),
+      headers: _jsonHeaders(token: token),
+    );
+
+    _ensureJson(response);
+
+    if (response.statusCode != 200) {
+      throw Exception("فشل تحميل الإشعارات");
+    }
+
+    return jsonDecode(response.body);
+  }
+
+  static Future<void> markNotificationRead(int id) async {
+    final token = await _getToken();
+
+    final response = await http.post(
+      Uri.parse('$notificationsBaseUrl/read/$id/'),
+      headers: _jsonHeaders(token: token),
+    );
+
+    _ensureJson(response);
+
+    if (response.statusCode != 200) {
+      throw Exception("فشل تعليم الإشعار كمقروء");
+    }
+  }
+
+  // ======================
   // تسجيل خروج
   // ======================
 
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('access_token');
+    await prefs.remove('full_name');
   }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1069165424501",
+    "project_id": "ecr-notifications",
+    "storage_bucket": "ecr-notifications.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069165424501:android:2dfa9dd8d490748f3a2d3c",
+        "android_client_info": {
+          "package_name": "com.example.ecr_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJXwVzNm3uuKnMbJMD2lZyabUsVvlgxYE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

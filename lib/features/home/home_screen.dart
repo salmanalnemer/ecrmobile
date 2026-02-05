@@ -4,6 +4,7 @@ import '../../api/api_service.dart';
 import 'case_report_screen.dart';
 import '../contact/contact_us_screen.dart';
 import '../settings/settings_screen.dart';
+import '../notifications/notifications_screen.dart'; // صفحة الإشعارات
 
 class HomeScreen extends StatefulWidget {
   final String fullName;
@@ -22,13 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
   bool loading = true;
   int activeResponders = 0, totalCases = 0, myRespondedCases = 0;
   int cpr = 0, bleeding = 0, aed = 0, choking = 0, bigSize = 0, support = 0;
+  int notificationCount = 0; // عدد الإشعارات
   Timer? refreshTimer;
 
   @override
   void initState() {
     super.initState();
     _loadDashboard();
-    refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) => _loadDashboard());
+    refreshTimer =
+        Timer.periodic(const Duration(seconds: 30), (_) => _loadDashboard());
   }
 
   @override
@@ -37,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // --- دالة تسجيل الخروج ---
   void _handleLogout() {
     showGeneralDialog(
       context: context,
@@ -48,15 +50,21 @@ class _HomeScreenState extends State<HomeScreen> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
             title: const Text("تنبيه"),
             content: const Text("هل ترغب في تسجيل الخروج من النظام؟"),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("إلغاء")),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: HomeScreen.primaryRed),
-                onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false),
-                child: const Text("خروج", style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: HomeScreen.primaryRed),
+                onPressed: () => Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/login', (route) => false),
+                child: const Text("خروج",
+                    style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -73,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
           activeResponders = data['active_responders'] ?? 0;
           totalCases = data['total_cases'] ?? 0;
           myRespondedCases = data['my_responded_cases'] ?? 0;
+
           final services = data['services_stats'] ?? {};
           cpr = services['cpr'] ?? 0;
           bleeding = services['bleeding'] ?? 0;
@@ -80,6 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
           choking = services['choking'] ?? 0;
           bigSize = services['big_size'] ?? 0;
           support = services['support'] ?? 0;
+
           loading = false;
         });
       }
@@ -95,35 +105,45 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: HomeScreen.background,
         extendBody: true,
-        // --- زر الإضافة (+) المحفور في الفوتر ---
         floatingActionButton: SizedBox(
-          height: 65, width: 65,
+          height: 65,
+          width: 65,
           child: FloatingActionButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CaseReportScreen())),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const CaseReportScreen())),
             backgroundColor: HomeScreen.primaryRed,
             elevation: 8,
             shape: const CircleBorder(),
-            child: const Icon(Icons.add, size: 35, color: Colors.white),
+            child: const Icon(Icons.add,
+                size: 35, color: Colors.white),
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: _buildModernBottomBar(),
-        body: loading 
-            ? const Center(child: CircularProgressIndicator(color: HomeScreen.primaryRed))
+        body: loading
+            ? const Center(
+                child: CircularProgressIndicator(
+                    color: HomeScreen.primaryRed))
             : CustomScrollView(
                 slivers: [
                   _buildSliverHeader(),
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 25, 20, 100),
+                      padding:
+                          const EdgeInsets.fromLTRB(20, 25, 20, 100),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
                           _buildSectionTitle("الإحصائيات المباشرة"),
                           const SizedBox(height: 15),
                           _buildMainStatusCard(),
                           const SizedBox(height: 30),
-                          _buildSectionTitle("تصنيف الخدمات الإسعافية"),
+                          _buildSectionTitle(
+                              "تصنيف الخدمات الإسعافية"),
                           const SizedBox(height: 15),
                           _buildServicesGrid(),
                         ],
@@ -144,43 +164,110 @@ class _HomeScreenState extends State<HomeScreen> {
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [HomeScreen.primaryRed, HomeScreen.darkRed]),
-            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(35), bottomRight: Radius.circular(35)),
+            gradient: LinearGradient(
+                colors: [HomeScreen.primaryRed, HomeScreen.darkRed]),
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(35),
+                bottomRight: Radius.circular(35)),
           ),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
                 children: [
-                  // --- معلومات المستخدم (الآن أصبحت في جهة اليسار) ---
                   Row(
                     children: [
                       const CircleAvatar(
                         radius: 25,
                         backgroundColor: Colors.white24,
-                        child: Icon(Icons.person, color: Colors.white, size: 30),
+                        child: Icon(Icons.person,
+                            color: Colors.white, size: 30),
                       ),
                       const SizedBox(width: 15),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.start, // محاذاة النص لليمين بالنسبة للعمود
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
                         children: [
-                          const Text('مرحباً بك،', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                          Text(widget.fullName, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                          const Text('مرحباً بك،',
+                              style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14)),
+                          Text(widget.fullName,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight:
+                                      FontWeight.bold)),
                         ],
                       ),
                     ],
                   ),
-                  
-                  // --- زر تسجيل الخروج (الآن أصبح في جهة اليمين) ---
-                  IconButton(
-                    onPressed: _handleLogout,
-                    icon: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(color: Colors.white24, shape: BoxShape.circle),
-                      child: const Icon(Icons.logout, color: Colors.white, size: 20),
-                    ),
+
+                  // 🔔 زر الإشعارات + خروج
+                  Row(
+                    children: [
+                      Stack(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const NotificationsScreen(),
+                                ),
+                              );
+                            },
+                            icon: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                  color: Colors.white24,
+                                  shape: BoxShape.circle),
+                              child: const Icon(
+                                  Icons.notifications,
+                                  color: Colors.white,
+                                  size: 20),
+                            ),
+                          ),
+                          if (notificationCount > 0)
+                            Positioned(
+                              right: 5,
+                              top: 5,
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle),
+                                child: Text(
+                                  '$notificationCount',
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: _handleLogout,
+                        icon: Container(
+                          padding:
+                              const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                              color: Colors.white24,
+                              shape: BoxShape.circle),
+                          child: const Icon(Icons.logout,
+                              color: Colors.white,
+                              size: 20),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -190,38 +277,65 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildMainStatusCard() {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)]),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(color: Colors.black12, blurRadius: 10)
+          ]),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment:
+            MainAxisAlignment.spaceAround,
         children: [
-          _statusItem("حالاتي", myRespondedCases.toString(), Icons.volunteer_activism, HomeScreen.primaryRed),
-          _statusItem("المستجيبون", activeResponders.toString(), Icons.people, HomeScreen.accentGold),
-          _statusItem("الإجمالي", totalCases.toString(), Icons.analytics, Colors.blueGrey),
+          _statusItem("حالاتي",
+              myRespondedCases.toString(),
+              Icons.volunteer_activism,
+              HomeScreen.primaryRed),
+          _statusItem("المستجيبون",
+              activeResponders.toString(),
+              Icons.people,
+              HomeScreen.accentGold),
+          _statusItem("الإجمالي",
+              totalCases.toString(),
+              Icons.analytics,
+              Colors.blueGrey),
         ],
       ),
     );
   }
 
-  Widget _statusItem(String label, String value, IconData icon, Color color) {
+  Widget _statusItem(
+      String label, String value, IconData icon, Color color) {
     return Column(
       children: [
         Icon(icon, color: color, size: 24),
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 20)),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+        Text(value,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: color,
+                fontSize: 20)),
+        Text(label,
+            style: const TextStyle(
+                fontSize: 12, color: Colors.black54)),
       ],
     );
   }
 
   Widget _buildServicesGrid() {
     return GridView.count(
-      shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2, crossAxisSpacing: 15, mainAxisSpacing: 15, childAspectRatio: 1.3,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      crossAxisSpacing: 15,
+      mainAxisSpacing: 15,
+      childAspectRatio: 1.3,
       children: [
         _ServiceCard('إنعاش CPR', cpr, Icons.favorite, Colors.red),
-        _ServiceCard('إيقاف نزيف', bleeding, Icons.opacity, Colors.red.shade900),
+        _ServiceCard('إيقاف نزيف', bleeding, Icons.opacity, Colors.red),
         _ServiceCard('استخدام AED', aed, Icons.flash_on, Colors.orange),
         _ServiceCard('حالات غصة', choking, Icons.air, Colors.blue),
         _ServiceCard('وزن زائد', bigSize, Icons.monitor_weight, Colors.blueGrey),
@@ -232,64 +346,99 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildModernBottomBar() {
     return BottomAppBar(
-      height: 75, notchMargin: 8, color: Colors.white,
+      height: 75,
+      notchMargin: 8,
+      color: Colors.white,
       shape: const CircularNotchedRectangle(),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment:
+            MainAxisAlignment.spaceAround,
         children: [
-          _bottomNavItem(Icons.home, "الرئيسية", true, onTap: () {}),
-          _bottomNavItem(Icons.chat, "تواصل", false, onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const ContactUsScreen()));
-          }),
-          const SizedBox(width: 40),
-          _bottomNavItem(Icons.history, "سجلاتي", false, onTap: () {}),
-          _bottomNavItem(
-            Icons.settings,
-            "الإعدادات",
-            false,
-            onTap: () {
-              Navigator.push(
+          _bottomNavItem(Icons.home, "الرئيسية", true,
+              onTap: () {}),
+          _bottomNavItem(Icons.chat, "تواصل", false,
+              onTap: () {
+            Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const SettingsScreen(),
-                ),
-              );
-            },
-          ),
+                    builder: (_) =>
+                        const ContactUsScreen()));
+          }),
+          const SizedBox(width: 40),
+          _bottomNavItem(Icons.history, "سجلاتي", false,
+              onTap: () {}),
+          _bottomNavItem(Icons.settings, "الإعدادات",
+              false, onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) =>
+                        const SettingsScreen()));
+          }),
         ],
       ),
     );
   }
 
-  Widget _bottomNavItem(IconData icon, String label, bool isActive, {required VoidCallback onTap}) {
+  Widget _bottomNavItem(
+      IconData icon, String label, bool isActive,
+      {required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: isActive ? HomeScreen.primaryRed : Colors.grey, size: 26),
-          Text(label, style: TextStyle(color: isActive ? HomeScreen.primaryRed : Colors.grey, fontSize: 10)),
+          Icon(icon,
+              color: isActive
+                  ? HomeScreen.primaryRed
+                  : Colors.grey,
+              size: 26),
+          Text(label,
+              style: TextStyle(
+                  color: isActive
+                      ? HomeScreen.primaryRed
+                      : Colors.grey,
+                  fontSize: 10)),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) => Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold));
+  Widget _buildSectionTitle(String title) =>
+      Text(title,
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold));
 }
 
 class _ServiceCard extends StatelessWidget {
-  final String title; final int value; final IconData icon; final Color color;
-  const _ServiceCard(this.title, this.value, this.icon, this.color);
+  final String title;
+  final int value;
+  final IconData icon;
+  final Color color;
+
+  const _ServiceCard(
+      this.title, this.value, this.icon, this.color);
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.grey.shade100)),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          border:
+              Border.all(color: Colors.grey.shade100)),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment:
+            MainAxisAlignment.center,
         children: [
           Icon(icon, color: color, size: 30),
-          Text(value.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 20)),
-          Text(title, style: const TextStyle(fontSize: 12)),
+          Text(value.toString(),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                  fontSize: 20)),
+          Text(title,
+              style: const TextStyle(fontSize: 12)),
         ],
       ),
     );

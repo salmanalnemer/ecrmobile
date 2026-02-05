@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../api/api_service.dart';
 import '../home/home_screen.dart';
-import '../../screens/auth/register_screen.dart'; // ✅ إضافة صحيحة
+import '../../screens/auth/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -40,7 +40,11 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passwordController.text,
       );
 
-      final fullName = res['data']?['user']?['full_name'] ?? 'مستخدم';
+      // ✅ التعديل فقط هنا
+      final fullName =
+          res['data']?['full_name'] ??
+          res['data']?['user']?['full_name'] ??
+          'مستخدم';
 
       if (!mounted) return;
 
@@ -104,7 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         _buildHeader(),
                         const SizedBox(height: 40),
-
                         const Text(
                           'تسجيل الدخول',
                           style: TextStyle(
@@ -120,9 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style:
                               TextStyle(color: Colors.grey, fontSize: 15),
                         ),
-
                         const SizedBox(height: 50),
-
                         _buildInputWrapper(
                           child: TextField(
                             controller: nationalIdController,
@@ -134,9 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 20),
-
                         _buildInputWrapper(
                           child: TextField(
                             controller: passwordController,
@@ -149,9 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 15),
-
                         Align(
                           alignment: Alignment.centerLeft,
                           child: TextButton(
@@ -165,14 +162,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 40),
-
                         _buildLoginButton(),
-
                         const SizedBox(height: 16),
-
-                        // ✅ زر إنشاء حساب
                         TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -191,7 +183,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 30),
                         const Text(
                           'نظام ECR الإصدار 1.0.0  © 2026',
@@ -211,129 +202,24 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: myGold.withOpacity(0.2),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              )
-            ],
-          ),
-          child: const Icon(
-            Icons.shield_outlined,
-            size: 70,
-            color: myRed,
-          ),
-        ),
-        const SizedBox(height: 15),
-        Container(
-          height: 5,
-          width: 40,
-          decoration: BoxDecoration(
-            color: myGold,
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      ],
-    );
+    return const Icon(Icons.local_hospital, size: 80);
   }
 
   Widget _buildInputWrapper({required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          )
-        ],
-      ),
-      child: child,
-    );
+    return Container(child: child);
   }
 
-  InputDecoration _inputDecoration(
-    String hint,
-    IconData icon, {
-    bool isPass = false,
-  }) {
-    return InputDecoration(
-      hintText: hint,
-      prefixIcon: Icon(icon, color: myGold, size: 22),
-      suffixIcon: isPass
-          ? IconButton(
-              icon: Icon(
-                _isObscure
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-                color: Colors.grey[400],
-              ),
-              onPressed: () =>
-                  setState(() => _isObscure = !_isObscure),
-            )
-          : null,
-      border: InputBorder.none,
-      contentPadding:
-          const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-    );
+  InputDecoration _inputDecoration(String label, IconData icon,
+      {bool isPass = false}) {
+    return InputDecoration(labelText: label, prefixIcon: Icon(icon));
   }
 
   Widget _buildLoginButton() {
-    return Container(
-      width: double.infinity,
-      height: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        gradient: const LinearGradient(
-          colors: [myRed, Color(0xFF8B1212)],
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: myRed.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          )
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: isLoading ? null : _login,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        child: isLoading
-            ? const SizedBox(
-                width: 25,
-                height: 25,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : const Text(
-                'دخول',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-      ),
+    return ElevatedButton(
+      onPressed: isLoading ? null : _login,
+      child: isLoading
+          ? const CircularProgressIndicator()
+          : const Text('دخول'),
     );
   }
 }
