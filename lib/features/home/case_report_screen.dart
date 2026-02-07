@@ -43,8 +43,8 @@ class _CaseReportScreenState extends State<CaseReportScreen> {
     {'id': 'bleeding', 'name': 'إيقاف النزيف'},
     {'id': 'choking', 'name': 'الغصة'},
     {'id': 'aed', 'name': 'استخدام جهاز AED'},
-    {'id': 'support', 'name': 'الخدمات المساندة'},
     {'id': 'bigsize', 'name': 'وزن زائد'},
+    {'id': 'support', 'name': 'الخدمات الخدمات المساندة واللوجستية'},
   ];
 
   Future<void> _goToMyLocation() async {

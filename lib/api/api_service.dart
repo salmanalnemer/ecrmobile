@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // ======================
-  // Base URL (Android Emulator)
+  // Base URL (Production Render Server)
   // ======================
-  static const String _baseUrl = 'http://10.0.2.2:8000';
+  static const String _baseUrl = 'https://ecrzone.com';
 
   // ======================
   // API Paths
@@ -76,7 +76,6 @@ class ApiService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('access_token', decoded['data']['access']);
 
-      // ✅ التعديل فقط هنا: حفظ اسم المستخدم
       final fullName =
           decoded['data']?['full_name'] ??
           decoded['data']?['user']?['full_name'];
