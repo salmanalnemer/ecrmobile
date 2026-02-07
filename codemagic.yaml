@@ -1,0 +1,14 @@
+workflows:
+  flutter-release:
+    name: Flutter Release Build
+    environment:
+      flutter: stable
+
+    scripts:
+      - flutter pub get
+      - flutter build appbundle --release
+      - flutter build ipa --release
+
+    artifacts:
+      - build/**/outputs/**/*.aab
+      - build/ios/ipa/*.ipa
